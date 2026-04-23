@@ -3,7 +3,9 @@ import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import L from "leaflet";
 import {
   AlertCircle,
+  ArrowRight,
   CalendarDays,
+  CheckCircle2,
   ExternalLink,
   MapPin,
   X,
@@ -32,6 +34,11 @@ const oisIcon = L.icon({
   shadowSize: [41, 41],
 });
 
+const US_MAP_BOUNDS: [[number, number], [number, number]] = [
+  [18.5, -171.5],
+  [71.6, -66.5],
+];
+
 function formatIncidentDate(date: string): string {
   return new Date(`${date}T12:00:00`).toLocaleDateString("en-US", {
     month: "long",
@@ -59,11 +66,12 @@ function getMapCenter(incidents: Incident[]): [number, number] {
 export default function App() {
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const [waitlistEmail, setWaitlistEmail] = useState("");
+  const [submittedEmail, setSubmittedEmail] = useState("");
   const [waitlistError, setWaitlistError] = useState("");
   const [waitlistOpenedAt] = useState(() => Date.now());
-  const [hasJoinedWaitlist, setHasJoinedWaitlist] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return Boolean(window.localStorage.getItem("justicewatch_waitlist_email"));
+  const [gateStep, setGateStep] = useState<"form" | "success" | "open">(() => {
+    if (typeof window === "undefined") return "form";
+    return window.localStorage.getItem("justicewatch_waitlist_email") ? "open" : "form";
   });
 
   const mapCenter = useMemo(() => getMapCenter(INCIDENTS_2026), []);
@@ -91,7 +99,8 @@ export default function App() {
       emailInput.value = normalizedEmail;
     }
     window.localStorage.setItem("justicewatch_waitlist_email", normalizedEmail);
-    setHasJoinedWaitlist(true);
+    setSubmittedEmail(normalizedEmail);
+    setGateStep("success");
   };
 
   return (
@@ -127,9 +136,20 @@ export default function App() {
       </header>
 
       <main className="relative h-full w-full pt-[62px]">
-        <MapContainer center={mapCenter} zoom={12} className="h-full w-full" zoomControl={false}>
+        <MapContainer
+          center={mapCenter}
+          zoom={5}
+          minZoom={4}
+          maxZoom={15}
+          className="h-full w-full"
+          zoomControl={false}
+          maxBounds={US_MAP_BOUNDS}
+          maxBoundsViscosity={1}
+          worldCopyJump={false}
+        >
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            noWrap
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           />
 
@@ -235,7 +255,7 @@ export default function App() {
         </AnimatePresence>
 
         <AnimatePresence>
-          {!hasJoinedWaitlist && (
+          {gateStep !== "open" && (
             <motion.section
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -244,77 +264,97 @@ export default function App() {
               aria-modal="true"
               role="dialog"
             >
-              <motion.div
-                initial={{ y: 24, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                className="w-full max-w-lg rounded-2xl border border-zinc-700 bg-zinc-900 p-6 shadow-2xl md:p-8"
-              >
-                <div className="mb-4 inline-flex rounded-full border border-blue-400/40 bg-blue-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-200">
-                  Waitlist Access Gate
-                </div>
-                <h2 className="text-2xl font-semibold tracking-tight text-white">Access JusticeWatch Briefing</h2>
-                <p className="mt-3 text-sm leading-6 text-zinc-300">
-                  This preview contains mapped incident briefings from 2026 public releases. Submit your email to join the waitlist and unlock the map.
-                </p>
-
-                <form
-                  name="waitlist"
-                  method="POST"
-                  action="/"
-                  data-netlify="true"
-                  netlify-honeypot="bot-field"
-                  onSubmit={handleWaitlistSubmit}
-                  className="mt-6 space-y-3"
-                >
-                  <input type="hidden" name="form-name" value="waitlist" />
-                  <input type="hidden" name="source" value="map-access-gate" />
-                  <p className="hidden">
-                    <label>
-                      Do not fill this out:
-                      <input name="bot-field" />
-                    </label>
-                  </p>
-                  <label htmlFor="waitlist-email" className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-400">
-                    Email address (required)
-                  </label>
-                  <input
-                    id="waitlist-email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={waitlistEmail}
-                    onChange={(e) => setWaitlistEmail(e.target.value)}
-                    className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none transition focus:border-blue-400"
-                    placeholder="name@domain.com"
-                  />
-
-                  {waitlistError ? (
-                    <p className="flex items-center gap-2 text-sm text-red-300">
-                      <AlertCircle className="h-4 w-4" />
-                      {waitlistError}
+              <motion.div initial={{ y: 24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="w-full max-w-lg rounded-2xl border border-zinc-700 bg-zinc-900 p-6 shadow-2xl md:p-8">
+                {gateStep === "form" ? (
+                  <>
+                    <div className="mb-4 inline-flex rounded-full border border-blue-400/40 bg-blue-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-200">
+                      Waitlist Access Gate
+                    </div>
+                    <h2 className="text-2xl font-semibold tracking-tight text-white">Access JusticeWatch Briefing</h2>
+                    <p className="mt-3 text-sm leading-6 text-zinc-300">
+                      This preview contains mapped incident briefings from 2026 public releases. Submit your email to join the waitlist and continue.
                     </p>
-                  ) : (
-                    <p className="text-xs text-zinc-500">
-                      Mandatory submission. Map access unlocks after successful waitlist sign-up.
+
+                    <form
+                      name="waitlist"
+                      method="POST"
+                      action="/"
+                      target="netlify-waitlist-target"
+                      data-netlify="true"
+                      netlify-honeypot="bot-field"
+                      onSubmit={handleWaitlistSubmit}
+                      className="mt-6 space-y-3"
+                    >
+                      <input type="hidden" name="form-name" value="waitlist" />
+                      <input type="hidden" name="source" value="map-access-gate" />
+                      <p className="hidden">
+                        <label>
+                          Do not fill this out:
+                          <input name="bot-field" />
+                        </label>
+                      </p>
+                      <label htmlFor="waitlist-email" className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-400">
+                        Email address (required)
+                      </label>
+                      <input
+                        id="waitlist-email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        value={waitlistEmail}
+                        onChange={(e) => setWaitlistEmail(e.target.value)}
+                        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none transition focus:border-blue-400"
+                        placeholder="name@domain.com"
+                      />
+
+                      {waitlistError ? (
+                        <p className="flex items-center gap-2 text-sm text-red-300">
+                          <AlertCircle className="h-4 w-4" />
+                          {waitlistError}
+                        </p>
+                      ) : (
+                        <p className="text-xs text-zinc-500">
+                          Mandatory submission. After submit you will receive access on the next screen.
+                        </p>
+                      )}
+
+                      <button type="submit" className="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-500">
+                        Submit Waitlist Form
+                      </button>
+                    </form>
+
+                    <p className="mt-4 text-[11px] text-zinc-500">
+                      Session gate started {new Date(waitlistOpenedAt).toLocaleTimeString()}.
                     </p>
-                  )}
-
-                  <button
-                    type="submit"
-                    className="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-500"
-                  >
-                    Join Waitlist and Enter Map
-                  </button>
-                </form>
-
-                <p className="mt-4 text-[11px] text-zinc-500">
-                  Session gate started {new Date(waitlistOpenedAt).toLocaleTimeString()}.
-                </p>
+                  </>
+                ) : (
+                  <div className="space-y-5">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-200">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Waitlist Submission Received
+                    </div>
+                    <h2 className="text-2xl font-semibold tracking-tight text-white">You Are Cleared to Enter the Map</h2>
+                    <p className="text-sm leading-6 text-zinc-300">
+                      Your email was submitted to the JusticeWatch waitlist.
+                      {submittedEmail ? ` (${submittedEmail})` : ""} Continue to view the nationwide 2026 incident map.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setGateStep("open")}
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-500"
+                    >
+                      Access Incident Map
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                    <p className="text-xs text-zinc-500">Need to change email? Refresh the page and resubmit.</p>
+                  </div>
+                )}
               </motion.div>
             </motion.section>
           )}
         </AnimatePresence>
+        <iframe name="netlify-waitlist-target" title="Netlify waitlist target" className="hidden" />
       </main>
     </div>
   );
