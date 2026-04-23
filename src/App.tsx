@@ -60,7 +60,6 @@ export default function App() {
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const [waitlistEmail, setWaitlistEmail] = useState("");
   const [waitlistError, setWaitlistError] = useState("");
-  const [isSubmittingWaitlist, setIsSubmittingWaitlist] = useState(false);
   const [waitlistOpenedAt] = useState(() => Date.now());
   const [hasJoinedWaitlist, setHasJoinedWaitlist] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -76,55 +75,23 @@ export default function App() {
     };
   }, []);
 
-  const handleWaitlistSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const handleWaitlistSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const form = e.currentTarget;
+    const emailInput = form.elements.namedItem("email") as HTMLInputElement | null;
     const normalizedEmail = waitlistEmail.trim().toLowerCase();
     const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
     if (!emailOk) {
+      e.preventDefault();
       setWaitlistError("Enter a valid email address to continue.");
       return;
     }
 
-    setIsSubmittingWaitlist(true);
     setWaitlistError("");
-
-    try {
-      const body = new URLSearchParams({
-        "form-name": "waitlist",
-        email: normalizedEmail,
-        "bot-field": "",
-      }).toString();
-
-      const response = await fetch("/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Waitlist request failed with status ${response.status}`);
-      }
-
-      window.localStorage.setItem("justicewatch_waitlist_email", normalizedEmail);
-      setHasJoinedWaitlist(true);
-    } catch (error) {
-      const isLocalDev =
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1";
-
-      if (isLocalDev) {
-        window.localStorage.setItem("justicewatch_waitlist_email", normalizedEmail);
-        setHasJoinedWaitlist(true);
-      } else {
-        console.error(error);
-        setWaitlistError("Submission failed. Please try again in a moment.");
-      }
-    } finally {
-      setIsSubmittingWaitlist(false);
+    if (emailInput) {
+      emailInput.value = normalizedEmail;
     }
+    window.localStorage.setItem("justicewatch_waitlist_email", normalizedEmail);
+    setHasJoinedWaitlist(true);
   };
 
   return (
@@ -290,7 +257,23 @@ export default function App() {
                   This preview contains mapped incident briefings from 2026 public releases. Submit your email to join the waitlist and unlock the map.
                 </p>
 
-                <form onSubmit={handleWaitlistSubmit} className="mt-6 space-y-3">
+                <form
+                  name="waitlist"
+                  method="POST"
+                  action="/"
+                  data-netlify="true"
+                  netlify-honeypot="bot-field"
+                  onSubmit={handleWaitlistSubmit}
+                  className="mt-6 space-y-3"
+                >
+                  <input type="hidden" name="form-name" value="waitlist" />
+                  <input type="hidden" name="source" value="map-access-gate" />
+                  <p className="hidden">
+                    <label>
+                      Do not fill this out:
+                      <input name="bot-field" />
+                    </label>
+                  </p>
                   <label htmlFor="waitlist-email" className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-400">
                     Email address (required)
                   </label>
@@ -319,10 +302,9 @@ export default function App() {
 
                   <button
                     type="submit"
-                    disabled={isSubmittingWaitlist}
-                    className="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-500"
                   >
-                    {isSubmittingWaitlist ? "Joining waitlist..." : "Join Waitlist and Enter Map"}
+                    Join Waitlist and Enter Map
                   </button>
                 </form>
 
