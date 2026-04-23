@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 220" role="img" aria-label="JusticeWatch logo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220" />
+      <stop offset="1" stop-color="#111c31" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#60a5fa" />
+      <stop offset="1" stop-color="#22d3ee" />
+    </linearGradient>
+  </defs>
+
+  <rect width="820" height="220" rx="28" fill="url(#bg)" />
+
+  <g transform="translate(38 34)">
+    <rect x="0" y="0" width="150" height="150" rx="30" fill="#0a1426" stroke="#1e314f" />
+    <path
+      d="M75 22L114 36V72C114 95 99.7 115.2 75 126C50.3 115.2 36 95 36 72V36L75 22Z"
+      fill="none"
+      stroke="url(#accent)"
+      stroke-width="6"
+      stroke-linejoin="round"
+    />
+    <path d="M75 51C66.8 51 60.5 57.5 60.5 65.8C60.5 78.9 75 92.4 75 92.4C75 92.4 89.5 78.9 89.5 65.8C89.5 57.5 83.2 51 75 51Z" fill="#e5f2ff" />
+    <circle cx="75" cy="65.4" r="5.2" fill="#091327" />
+  </g>
+
+  <text x="220" y="102" fill="#f5f8ff" font-size="66" font-weight="750" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" letter-spacing="0.5">
+    JusticeWatch
+  </text>
+  <text x="222" y="145" fill="#9cb4d4" font-size="24" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" letter-spacing="1.1">
+    Incident Intelligence Map
+  </text>
+  <path d="M222 164H582" stroke="#27476f" stroke-width="3" stroke-linecap="round" />
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="JusticeWatch open graph image">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0ea5a5"/>
+      <stop offset="100%" stop-color="#11263b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.2" cy="0.2" r="0.9">
+      <stop offset="0%" stop-color="#5eead4" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#5eead4" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#050913"/>
+  <rect width="1200" height="630" fill="url(#bg)" opacity="0.26"/>
+  <circle cx="260" cy="180" r="260" fill="url(#glow)"/>
+  <rect x="58" y="58" width="1084" height="514" rx="34" fill="#070d1b" opacity="0.68" stroke="#9cb4e4" stroke-opacity="0.22"/>
+  <text x="120" y="255" fill="#e9f0ff" font-size="74" font-family="Inter, Segoe UI, Arial, sans-serif" font-weight="800">JusticeWatch</text>
+  <text x="120" y="328" fill="#b9c9e8" font-size="34" font-family="Inter, Segoe UI, Arial, sans-serif">Anonymous civic incident reporting</text>
+  <text x="120" y="520" fill="#8ca0c8" font-size="24" font-family="Inter, Segoe UI, Arial, sans-serif">by Neal Frazier</text>
+  <rect x="720" y="150" width="290" height="320" rx="24" fill="#0a1122" opacity="0.88"/><path d="M865 205L925 260L905 360H825L805 260Z" fill="none" stroke="#8de6ff" stroke-width="5"/><path d="M770 255H960" stroke="#8de6ff" stroke-width="5"/><circle cx="790" cy="276" r="22" fill="none" stroke="#b6ffcf" stroke-width="4"/><circle cx="940" cy="276" r="22" fill="none" stroke="#b6ffcf" stroke-width="4"/><path d="M865 340V420" stroke="#8de6ff" stroke-width="6"/>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="JusticeWatch favicon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220" />
+      <stop offset="1" stop-color="#131d34" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#60a5fa" />
+      <stop offset="1" stop-color="#22d3ee" />
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="14" fill="url(#bg)" />
+
+  <path
+    d="M32 11L48 17V31C48 40 42.2 47.8 32 52C21.8 47.8 16 40 16 31V17L32 11Z"
+    fill="none"
+    stroke="url(#accent)"
+    stroke-width="3"
+    stroke-linejoin="round"
+  />
+
+  <path
+    d="M32 22C28.6 22 26 24.6 26 28.1C26 33.6 32 39.2 32 39.2C32 39.2 38 33.6 38 28.1C38 24.6 35.4 22 32 22Z"
+    fill="#e6f3ff"
+    opacity="0.95"
+  />
+  <circle cx="32" cy="28" r="2.2" fill="#0b1220" />
+</svg>

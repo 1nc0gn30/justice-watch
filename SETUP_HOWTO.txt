@@ -1,0 +1,15 @@
+JusticeWatch - Setup How-To
+
+Current state
+- React + Vite frontend app.
+- Leaflet map with curated 2026 incident data.
+- Mandatory waitlist gate before map access.
+- Netlify config and static form detection are in place.
+
+Quick steps
+1. cd justicewatch
+2. npm install
+3. npm run dev
+4. npm run lint
+5. npm run build
+6. Deploy to Netlify (build: npm run build, publish: dist)
